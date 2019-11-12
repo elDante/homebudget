@@ -7,12 +7,15 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
+	"github.com/elDante/homebudget/database"
 )
 
+// Config root level config structure
 type Config struct {
 	Database Database
 }
 
+// Database store database settings
 type Database struct {
 	Host     string
 	Port     int
@@ -43,6 +46,6 @@ func main() {
 	flag.Parse()
 
 	config := parseConfig(configPath)
-	db := DBConnector(&config.Database)
-	MigrateDB(db)
+	db := database.DBConnector(&config.Database)
+	database.MigrateDB(db)
 }
