@@ -7,15 +7,17 @@ import (
 
 // Split model
 type Split struct {
-	GUID        uuid.UUID `gorm:"primary_key"`
-	Transaction Transaction
-	Account     Account
-	Value       int
-	ValueDenom  int
+	ID            uuid.UUID `gorm:"type:uuid;primary_key"`
+	TransactionID uuid.UUID `gorm:"type:uuid;not null;"`
+	Transaction   Transaction
+	AccountID     uuid.UUID `gorm:"type:uuid;not null;"`
+	Account       Account
+	Value         int
+	ValueDenom    int
 }
 
-// BeforeCreate set guid before create
+// BeforeCreate will set a UUID rather than numeric ID.
 func (split *Split) BeforeCreate(scope *gorm.Scope) error {
-	scope.SetColumn("GUID", uuid.NewV4().String())
+	scope.SetColumn("ID", uuid.NewV4())
 	return nil
 }

@@ -7,23 +7,24 @@ import (
 
 // Currency model for currencies store
 type Currency struct {
-	GUID     uuid.UUID `gorm:"primary_key"`
+	ID       uuid.UUID `gorm:"type:uuid;primary_key"`
 	Mnemonic string
 	Fullname string
 	Fraction int
 }
 
-// BeforeCreate set guid before create
+// BeforeCreate will set a UUID rather than numeric ID.
 func (currency *Currency) BeforeCreate(scope *gorm.Scope) error {
-	scope.SetColumn("GUID", uuid.NewV4().String())
+	scope.SetColumn("ID", uuid.NewV4())
 	return nil
 }
 
 // CurrencyFixtures creates initial curensies
 func CurrencyFixtures(db *gorm.DB) error {
-	db.Create(Currency{Mnemonic: "RUB", Fullname: "Russian rouble", Fraction: 100})
-	db.Create(Currency{Mnemonic: "EUR", Fullname: "Euro", Fraction: 100})
-	db.Create(Currency{Mnemonic: "USD", Fullname: "United States dollar", Fraction: 100})
-	db.Create(Currency{Mnemonic: "GBP", Fullname: "Pound sterling", Fraction: 100})
+	db.LogMode(true)
+	db.Debug().Create(Currency{ID: uuid.NewV4(), Mnemonic: "RUB", Fullname: "Russian rouble", Fraction: 100})
+	db.Debug().Create(Currency{ID: uuid.NewV4(), Mnemonic: "EUR", Fullname: "Euro", Fraction: 100})
+	db.Debug().Create(Currency{ID: uuid.NewV4(), Mnemonic: "USD", Fullname: "United States dollar", Fraction: 100})
+	db.Debug().Create(Currency{ID: uuid.NewV4(), Mnemonic: "GBP", Fullname: "Pound sterling", Fraction: 100})
 	return nil
 }

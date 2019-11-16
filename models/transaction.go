@@ -9,15 +9,16 @@ import (
 
 // Transaction model
 type Transaction struct {
-	GUID        uuid.UUID `gorm:"primary_key"`
+	ID          uuid.UUID `gorm:"type:uuid;primary_key"`
+	CurrencyID  uuid.UUID `gorm:"type:uuid;not null;"`
 	Currency    Currency
 	PostDate    time.Time
 	EnterDate   time.Time
 	Description string
 }
 
-// BeforeCreate set guid before create
+// BeforeCreate will set a UUID rather than numeric ID.
 func (transaction *Transaction) BeforeCreate(scope *gorm.Scope) error {
-	scope.SetColumn("GUID", uuid.NewV4().String())
+	scope.SetColumn("ID", uuid.NewV4())
 	return nil
 }

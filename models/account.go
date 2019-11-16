@@ -7,17 +7,18 @@ import (
 
 // Account model for storing multiple accounts
 type Account struct {
-	GUID        uuid.UUID `gorm:"primary_key"`
+	ID          uuid.UUID `gorm:"type:uuid;primary_key"`
 	Name        string
 	AccountType string
+	CurrencyID  uuid.UUID `gorm:"type:uuid;not null;"`
 	Currency    Currency
-	ParentGUID  uuid.UUID
+	ParentID    uuid.UUID
 	Description string
 	Placeholder bool
 }
 
-// BeforeCreate set guid before create
+// BeforeCreate will set a UUID rather than numeric ID.
 func (account *Account) BeforeCreate(scope *gorm.Scope) error {
-	scope.SetColumn("GUID", uuid.NewV4().String())
+	scope.SetColumn("ID", uuid.NewV4())
 	return nil
 }
