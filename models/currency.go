@@ -21,10 +21,15 @@ func (currency *Currency) BeforeCreate(scope *gorm.Scope) error {
 
 // CurrencyFixtures creates initial curensies
 func CurrencyFixtures(db *gorm.DB) error {
-	db.LogMode(true)
-	db.Debug().Create(Currency{ID: uuid.NewV4(), Mnemonic: "RUB", Fullname: "Russian rouble", Fraction: 100})
-	db.Debug().Create(Currency{ID: uuid.NewV4(), Mnemonic: "EUR", Fullname: "Euro", Fraction: 100})
-	db.Debug().Create(Currency{ID: uuid.NewV4(), Mnemonic: "USD", Fullname: "United States dollar", Fraction: 100})
-	db.Debug().Create(Currency{ID: uuid.NewV4(), Mnemonic: "GBP", Fullname: "Pound sterling", Fraction: 100})
+	fixtures := [4]Currency{
+		Currency{Mnemonic: "RUB", Fullname: "Russian rouble", Fraction: 100},
+		Currency{Mnemonic: "EUR", Fullname: "Euro", Fraction: 100},
+		Currency{Mnemonic: "USD", Fullname: "United States dollar", Fraction: 100},
+		Currency{Mnemonic: "GBP", Fullname: "Pound sterling", Fraction: 100},
+	}
+	for _, fixture := range fixtures {
+		db.Where(&fixture).FirstOrCreate(&fixture)
+	}
+
 	return nil
 }

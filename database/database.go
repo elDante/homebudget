@@ -28,10 +28,10 @@ func MigrateDB(db *gorm.DB) {
 		if err != nil {
 			log.Println(err)
 		}
-		models.CurrencyFixtures(db)
 	} else {
 		db.AutoMigrate(&models.Currency{})
 	}
+	models.CurrencyFixtures(db)
 
 	if !db.HasTable(&models.Split{}) {
 		err := db.CreateTable(&models.Split{})

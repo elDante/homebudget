@@ -5,7 +5,6 @@ import (
 
 	"github.com/elDante/homebudget/config"
 	"github.com/elDante/homebudget/database"
-	"github.com/elDante/homebudget/models"
 )
 
 func main() {
@@ -16,5 +15,4 @@ func main() {
 	db := database.Connector(&conf.Database)
 	defer db.Close()
 	database.MigrateDB(db)
-	models.CurrencyFixtures(db)
 }
