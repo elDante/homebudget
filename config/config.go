@@ -11,6 +11,7 @@ import (
 // Config root level config structure
 type Config struct {
 	Database Database
+	Redis    Redis
 }
 
 // Database store database settings
@@ -20,6 +21,13 @@ type Database struct {
 	Username string
 	Password string
 	Name     string
+}
+
+// Redis store settings
+type Redis struct {
+	Host     string
+	Port     int
+	Database int
 }
 
 // Parse parsing toml config

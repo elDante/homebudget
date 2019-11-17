@@ -4,3 +4,8 @@ port = 3306
 username = "homebudget"
 password = "homebudget"
 name = "homebudget"
+
+[redis]
+host = "localhost"
+port = 6379
+database = 0
