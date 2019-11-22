@@ -50,6 +50,15 @@ func MigrateDB(db *gorm.DB) {
 	} else {
 		db.AutoMigrate(&models.Transaction{})
 	}
+
+	if !db.HasTable(&models.User{}) {
+		err := db.CreateTable(&models.User{})
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		db.AutoMigrate(&models.User{})
+	}
 }
 
 // Connector connect to database
