@@ -24,7 +24,7 @@ var createUserCmd = &cobra.Command{
 		user := models.User{
 			FullName: fullName,
 			Email:    email,
-			Password: contrib.SecretString(password),
+			Password: contrib.SecretString(password, cnf.Site.Secret),
 		}
 		db.Where(&user).FirstOrCreate(&user)
 		log.Println("User created")

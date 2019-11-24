@@ -16,7 +16,7 @@ var serverCmd = &cobra.Command{
 		cnf := config.Parse(&ConfigPath)
 		redis := contrib.RedisConnector(&cnf.Redis)
 		db := database.Connector(&cnf.Database)
-		router := router.Router(db, redis)
+		router := router.Router(db, redis, &cnf.Site)
 		router.Run()
 	},
 }

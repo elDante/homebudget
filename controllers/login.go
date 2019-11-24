@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/elDante/homebudget/config"
+
 	"github.com/elDante/homebudget/contrib"
 	"github.com/elDante/homebudget/models"
 	"github.com/gin-gonic/gin"
@@ -18,7 +20,7 @@ type jsonResponse struct {
 }
 
 // UserLogin authentificate user
-func UserLogin(db *gorm.DB, redis *redis.Client) gin.HandlerFunc {
+func UserLogin(db *gorm.DB, redis *redis.Client, site *config.Site) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if _, err := c.Request.Cookie("authorization"); err != nil {
 			c.Request.ParseForm()
@@ -29,7 +31,7 @@ func UserLogin(db *gorm.DB, redis *redis.Client) gin.HandlerFunc {
 			if user.Email == "" {
 				c.AbortWithStatusJSON(403, jsonResponse{Code: 403, Message: "Invalid email"})
 			}
-			if user.Password == contrib.SecretString(password) {
+			if user.Password == contrib.SecretString(password, site.Secret) {
 				c.AbortWithStatusJSON(403, jsonResponse{Code: 403, Message: "Invalid password"})
 			}
 			// All ok - create session

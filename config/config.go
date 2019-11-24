@@ -12,6 +12,7 @@ import (
 type Config struct {
 	Database Database
 	Redis    Redis
+	Site     Site
 }
 
 // Database store database settings
@@ -28,6 +29,12 @@ type Redis struct {
 	Host     string
 	Port     int
 	Database int
+}
+
+// Site core site settings
+type Site struct {
+	Secret     string
+	ServerName string
 }
 
 // Parse parsing toml config

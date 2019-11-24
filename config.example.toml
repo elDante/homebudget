@@ -1,3 +1,7 @@
+[site]
+secret = "zJ8aXM5TcXaWM2p3BNWBNlfn7oZ5kYlm"
+server_name = "127.0.0.1"
+
 [database]
 host = "127.0.0.1"
 port = 3306
