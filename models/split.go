@@ -7,13 +7,13 @@ import (
 
 // Split model
 type Split struct {
-	ID            uuid.UUID `gorm:"type:uuid;primary_key"`
-	TransactionID uuid.UUID `gorm:"type:uuid;not null;"`
+	ID            uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
+	TransactionID uuid.UUID `gorm:"type:uuid;not null;" json:"transaction_id"`
 	Transaction   Transaction
-	AccountID     uuid.UUID `gorm:"type:uuid;not null;"`
+	AccountID     uuid.UUID `gorm:"type:uuid;not null;" json:"account_id"`
 	Account       Account
-	Value         int
-	ValueDenom    int
+	Value         int `json:"value"`
+	ValueDenom    int `json:"value_denom"`
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.

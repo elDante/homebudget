@@ -7,10 +7,10 @@ import (
 
 // Currency model for currencies store
 type Currency struct {
-	ID       uuid.UUID `gorm:"type:uuid;primary_key"`
-	Mnemonic string
-	Fullname string
-	Fraction int
+	ID       uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
+	Mnemonic string    `json:"mnemonic"`
+	Fullname string    `json:"full_name"`
+	Fraction int       `json:"fraction"`
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.

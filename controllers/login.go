@@ -3,6 +3,7 @@ package controllers
 import (
 	"crypto/sha256"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/elDante/homebudget/config"
@@ -14,11 +15,6 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type jsonResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
 // UserLogin authentificate user
 func UserLogin(db *gorm.DB, redis *redis.Client, site *config.Site) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -29,10 +25,10 @@ func UserLogin(db *gorm.DB, redis *redis.Client, site *config.Site) gin.HandlerF
 			password := c.PostForm("password")
 			db.Where("email = ?", email).First(&user)
 			if user.Email == "" {
-				c.AbortWithStatusJSON(403, jsonResponse{Code: 403, Message: "Invalid email"})
+				c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "Invalid email"})
 			}
 			if user.Password == contrib.SecretString(password, site.Secret) {
-				c.AbortWithStatusJSON(403, jsonResponse{Code: 403, Message: "Invalid password"})
+				c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"message": "Invalid password"})
 			}
 			// All ok - create session
 			now, _ := time.Now().MarshalBinary()
@@ -40,9 +36,9 @@ func UserLogin(db *gorm.DB, redis *redis.Client, site *config.Site) gin.HandlerF
 			expire := 7776000
 			redis.Set(fmt.Sprintf("%x", value), user.ID, (time.Duration(expire) * time.Second))
 			c.SetCookie("authorization", fmt.Sprintf("%x", value), expire, "/", "127.0.0.1", false, true)
-			c.JSON(200, fmt.Sprintf("Success!, %s", err))
+			c.JSON(http.StatusOK, gin.H{"message": "Success!"})
 		} else {
-			c.JSON(200, jsonResponse{Code: 200, Message: "You are already logged"})
+			c.JSON(http.StatusOK, gin.H{"message": "You are already logged"})
 		}
 	}
 }

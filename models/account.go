@@ -7,14 +7,14 @@ import (
 
 // Account model for storing multiple accounts
 type Account struct {
-	ID          uuid.UUID `gorm:"type:uuid;primary_key"`
-	Name        string
-	AccountType string
-	CurrencyID  uuid.UUID `gorm:"type:uuid;not null;"`
+	ID          uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
+	Name        string    `json:"name"`
+	AccountType string    `json:"account_type"`
+	CurrencyID  uuid.UUID `gorm:"type:uuid;not null;" json:"currency_id"`
 	Currency    Currency
-	ParentID    uuid.UUID
-	Description string
-	Placeholder bool
+	ParentID    uuid.UUID `json:"parent_id"`
+	Description string    `json:"description"`
+	Placeholder bool      `json:"placeholder"`
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.

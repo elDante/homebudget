@@ -9,12 +9,12 @@ import (
 
 // Transaction model
 type Transaction struct {
-	ID          uuid.UUID `gorm:"type:uuid;primary_key"`
-	CurrencyID  uuid.UUID `gorm:"type:uuid;not null;"`
+	ID          uuid.UUID `gorm:"type:uuid;primary_key" json:"id"`
+	CurrencyID  uuid.UUID `gorm:"type:uuid;not null;" json:"currency_id"`
 	Currency    Currency
-	PostDate    time.Time
-	EnterDate   time.Time
-	Description string
+	PostDate    time.Time `json:"post_date"`
+	EnterDate   time.Time `json:"enter_date"`
+	Description string    `json:"description"`
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.
