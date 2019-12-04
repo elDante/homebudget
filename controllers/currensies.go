@@ -13,7 +13,7 @@ func GetCurrensies(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var currensies []models.Currency
 		db.Find(&currensies)
-		c.JSON(http.StatusOK, currensies)
+		c.JSON(http.StatusOK, &currensies)
 	}
 }
 
@@ -25,7 +25,7 @@ func GetCurrency(db *gorm.DB) gin.HandlerFunc {
 		if err := db.Where("id = ?", id).First(&currency).Error; err != nil {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Not found"})
 		} else {
-			c.JSON(http.StatusOK, currency)
+			c.JSON(http.StatusOK, &currency)
 		}
 	}
 }
