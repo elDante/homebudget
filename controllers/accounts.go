@@ -71,15 +71,19 @@ func DeleteAccount(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")
 		var account models.Account
-		if err := db.Where("id = ?", id).First(&account).Error; err != nil {
+		if err := db.Where("id = ?", id).Take(&account).Error; err != nil {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Not found"})
 		} else {
 			var transactions []models.Split
 			if err := db.Where("account_id = ?", id).Find(&transactions).Error; err != nil {
 				db.Delete(&account)
 				c.JSON(http.StatusOK, gin.H{"message": "Account deleted"})
-			} else {
+			}
+			if len(transactions) > 0 {
 				c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("Cannot delete account, account has %d transactions", len(transactions))})
+			} else {
+				db.Delete(&account)
+				c.JSON(http.StatusOK, gin.H{"message": "Account deleted"})
 			}
 		}
 	}
@@ -99,7 +103,7 @@ func GetAccountBalance(db *gorm.DB) gin.HandlerFunc {
 		if err := db.Where("id = ?", id).First(&account).Error; err != nil {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Not found"})
 		} else {
-			db.Model(&models.Split{}).Select("SUM(value) as value, value_denom").Where("account_id = ?", account.ID).Group("value, value_denom").Scan(&balance)
+			db.Model(&models.Split{}).Select("SUM(value) as value, value_denom").Where("account_id = ?", account.ID).Group("value_denom").Scan(&balance)
 			c.JSON(http.StatusOK, &balance)
 		}
 	}

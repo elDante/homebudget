@@ -44,21 +44,31 @@ func CreateAccount(db *gorm.DB, data *AccountPayload) error {
 		return fmt.Errorf("Currency with id: %s does not exists", data.CurrencyID)
 	}
 	// Create ROOT account if it isn't exists
-	var root Account
-	if err := db.Where("account_type = ?", "ROOT").Take(&root).Error; err != nil {
-		root = Account{Name: "Root Account", AccountType: "ROOT", CurrencyID: currency.ID, ParentID: uuid.Nil, Description: "", Placeholder: false}
-		db.Create(&root)
-	}
-	// Assign ROOT account as parent account if not parent
+	var parent Account
 	if data.ParentID == uuid.Nil {
-		data.ParentID = root.ID
+		if err := db.Where("account_type = ?", "ROOT").Take(&parent).Error; err != nil {
+			parent = Account{Name: "Root Account", AccountType: "ROOT", CurrencyID: currency.ID, ParentID: uuid.Nil, Description: "", Placeholder: false}
+			db.Create(&parent)
+		}
+		data.ParentID = parent.ID
+	} else {
+		if err := db.Where("id = ?", data.ParentID).Take(&parent).Error; err != nil {
+			return fmt.Errorf("Parent account does not exist")
+		}
 	}
+
+	if err := db.Where("name = ? AND account_type = ? AND parent_id = ?", data.Name, data.AccountType, data.ParentID).Take(&Account{}).Error; err == nil {
+		return fmt.Errorf("Account already exists")
+	}
+
 	newAccount := Account{Name: data.Name, AccountType: data.AccountType, CurrencyID: currency.ID, ParentID: data.ParentID, Description: data.Description, Placeholder: data.Placeholder}
 	db.Create(&newAccount)
 	db.Model(&newAccount).Related(&newAccount.Currency)
 	if data.Balance != 0 {
 		var creditAccount Account
 		if err := db.Where("account_type = ? AND currency_id = ?", "EQUITY", data.CurrencyID).First(&creditAccount).Error; err != nil {
+			var root Account
+			db.Where("account_type = ?", "ROOT").Take(&root)
 			creditAccount = Account{Name: fmt.Sprintf("Start balance - %s", currency.Mnemonic), AccountType: "EQUITY", CurrencyID: currency.ID, ParentID: root.ID, Description: "", Placeholder: false}
 			db.Create(&creditAccount)
 		}

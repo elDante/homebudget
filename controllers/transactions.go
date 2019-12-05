@@ -84,6 +84,12 @@ func CreateTransaction(db *gorm.DB) gin.HandlerFunc {
 				return
 			}
 			db.Model(&debitAccount).Related(&debitAccount.Currency)
+			if creditAccount.CurrencyID == debitAccount.CurrencyID {
+				if (payload.CreditValue + payload.DebitValue) != 0 {
+					c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Credit and debit value mismatch"})
+					return
+				}
+			}
 			if err := models.CreateTransaction(db, postDate, payload.Description, &creditAccount, &debitAccount, payload.CreditValue, payload.DebitValue); err != nil {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 				return
@@ -101,9 +107,7 @@ func DeleteTransaction(db *gorm.DB) gin.HandlerFunc {
 		if err := db.Where("id = ?", id).First(&transaction).Error; err != nil {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": "Not found"})
 		} else {
-			var splits []models.Split
-			db.Where("transaction_id = ?", transaction.ID).Find(&splits)
-			db.Delete(&splits)
+			db.Where("transaction_id = ?", transaction.ID).Delete(&models.Split{})
 			db.Delete(&transaction)
 			c.JSON(http.StatusOK, gin.H{"message": "Transaction deleted"})
 		}
