@@ -8,7 +8,7 @@ import (
 	"github.com/elDante/homebudget/models"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"gopkg.in/oleiade/reflections.v1"
+	"github.com/oleiade/reflections"
 )
 
 type getResponse struct {
